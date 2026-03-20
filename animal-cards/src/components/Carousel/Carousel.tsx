@@ -32,11 +32,14 @@ export default function Carousel({ animals, loading }: CarouselProps) {
     [dispatch]
   );
 
-  // Velocity-based transition speed on swipe release
-  const handleTouchEnd = useCallback((swiper: SwiperType) => {
-    const duration = velocityToDuration(swiper.velocity);
-    swiper.params.speed = duration;
-  }, []);
+  // Velocity-based transition speed on swipe release (disabled for Vercel build)
+  // const handleTouchEnd = useCallback((swiper: SwiperType) => {
+  //   const duration = velocityToDuration(swiper.velocity);
+  //   swiper.params.speed = duration;
+  // }, []);
+
+  // Use a no-op handler for onTouchEnd
+  const handleTouchEnd = useCallback(() => {}, []);
 
   // Progressive depth effect: scale + opacity + zIndex per card-step from center, capped at 3
   const handleProgress = useCallback((swiper: SwiperType) => {
