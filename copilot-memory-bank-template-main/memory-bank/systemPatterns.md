@@ -3,22 +3,60 @@
 ## Architecture
 - **Framework**: Next.js (React)
 - **UI Library**: Material UI (MUI)
-- **Data Model**: Hybrid — combines multiple sources with local overrides
+- **State**: React Context
+- **Persistence**: localStorage (favorites, decks, current index)
+- **Backend**: Next.js API routes (data aggregation layer)
 
-## Data Sources
-- **API Ninjas** — structured animal data
-- **Wikipedia** — supplementary text/facts
-- **Wikimedia** — images
-- **Local overrides** — curated corrections and additions stored in the project
+## Data Model
 
-## Key Patterns
-- **Carousel component**: Horizontal swipe navigation through animal cards
-- **Card component**: Flip interaction (front: image/name, back: facts)
-- **Favorites system**: Persist user favorites (storage TBD)
-- **Decks**: Group cards into themed collections
-- **Sorting & shuffle**: Reorder cards within a deck or the main carousel
+```ts
+Animal {
+  id: string
+  name: string
+  binomialName: string
+  habitat: string
+  conservationStatus: string
+  description: string
+  funFacts: string[]
+  range: string[]
+  imageUrl: string
+  thumbnailUrl: string
+  wikipediaUrl: string
+}
+```
+
+## App State
+
+```ts
+AppState {
+  animals: Animal[]
+  currentIndex: number
+  favorites: string[]        // animal IDs
+  decks: Deck[]
+  sortMode: 'none' | 'habitat' | 'conservation'
+}
+```
+
+## Data Aggregation Flow
+`/api/animals` → Fetch API Ninjas → Fetch Wikipedia description → Fetch Wikimedia image → Merge local overrides → Return normalized `Animal[]`
+
+| Data Field | Source |
+|---|---|
+| Name, binomial name, habitat, range | API Ninjas |
+| Description, Wikipedia link | Wikipedia |
+| Image | Wikimedia |
+| Fun facts, conservation status | Local JSON |
+
+## Component Architecture
+- **Carousel**: Horizontal swipe, snap-to-card, partial next card visible, index tracking, keyboard nav
+- **Card**: Front (image + name + binomial + habitat + conservation) / Back (description + facts + range + link), flip animation, reset on swipe
+- **Favorites**: Heart icon toggle, localStorage persistence, hydrate on load
+- **Decks**: List view, detail view, CRUD operations, default deck "My First Animals"
+- **Add to Deck**: "+" button on card → modal with deck list + inline create
+- **Sort/Shuffle**: Control UI, sort by habitat or conservation status, shuffle, updates carousel order
 
 ## UX Principles
-- Swipe-first interaction model
-- Minimal navigation — the card carousel is the primary interface
-- Card flip for progressive disclosure of information
+- Swipe-first, gesture-driven interaction model
+- Users land directly in the carousel — minimal navigation
+- Card flip for progressive disclosure
+- Playful, kid-friendly visual design (rounded, bright/soft palette, large targets)
