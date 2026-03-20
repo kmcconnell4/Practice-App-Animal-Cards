@@ -11,15 +11,20 @@ Project is in **initial setup phase**. Planning is complete — PRD, design doc,
 5. Add TypeScript & configure linting
 
 ## Decisions Made
+- **Target age**: 3–5 (pre-readers/early readers) — visual-first, minimal text
 - **Data model**: Hybrid — API Ninjas + Wikipedia + Wikimedia + local JSON overrides
 - **Animal model**: Defined with id, name, binomialName, habitat, conservationStatus, description, funFacts, range, imageUrl, thumbnailUrl, wikipediaUrl
+- **Card front**: Simplified — large image, name (prominent), minimal metadata (habitat icon/text). Binomial name and conservation status NOT on front
+- **Card back**: Description (2–3 sentences), 2–3 fun facts, range, "Learn more" link
 - **State management**: React Context with `AppState` (animals, currentIndex, favorites, decks, sortMode)
 - **Persistence**: localStorage for favorites, decks, and current index
-- **UX**: Swipe-first, card flip, minimal navigation, users land directly in carousel
+- **Navigation**: No landing page, no tab bar — overlay buttons for deck access and controls
+- **UX**: Swipe-first, card flip, gesture-driven, visual-first
 - **Stack**: Next.js + MUI + TypeScript
 - **No accounts**: Fully local, no backend auth
 - **Default deck**: "My First Animals"
-- **Launch scope**: 100 animals, web app only
+- **Launch scope**: 100 curated animals, web app only
+- **Future scope identified**: accounts/syncing, quiz mode, unlockable animals, audio, progress tracking, offline
 
 ## Open Questions
 - API key management for API Ninjas

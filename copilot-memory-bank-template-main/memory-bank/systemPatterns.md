@@ -48,15 +48,20 @@ AppState {
 | Fun facts, conservation status | Local JSON |
 
 ## Component Architecture
-- **Carousel**: Horizontal swipe, snap-to-card, partial next card visible, index tracking, keyboard nav
-- **Card**: Front (image + name + binomial + habitat + conservation) / Back (description + facts + range + link), flip animation, reset on swipe
-- **Favorites**: Heart icon toggle, localStorage persistence, hydrate on load
-- **Decks**: List view, detail view, CRUD operations, default deck "My First Animals"
-- **Add to Deck**: "+" button on card → modal with deck list + inline create
-- **Sort/Shuffle**: Control UI, sort by habitat or conservation status, shuffle, updates carousel order
+- **Carousel**: Horizontal swipe (touch + mouse), snap-to-card, partial next card visible ("peek"), index tracking, keyboard nav (arrow keys), one active card at a time
+- **Card Front**: Large image, animal name (prominent), minimal metadata (e.g., habitat via icon/text)
+- **Card Back**: Description (2–3 sentences), 2–3 fun facts, range (text), "Learn more" Wikipedia link
+- **Card interaction**: Tap to flip (animated, <300ms), card resets to front on swipe
+- **Favorites**: Heart icon on each card, toggle with immediate visual feedback, localStorage persistence, hydrate on load
+- **Decks**: List view (accessible via overlay button), detail view, CRUD operations, default deck "My First Animals"
+- **Add to Deck**: "+" button on card → modal with deck list + inline create, confirmation feedback (visual/toast)
+- **Sort/Shuffle**: Overlay control UI, sort by habitat or conservation status, shuffle randomizes instantly, updates carousel order
+- **Navigation**: No landing page, no tab bar, deck access via small overlay button, UI does not obstruct card content
 
 ## UX Principles
+- Visual-first, minimal text (designed for pre-readers)
 - Swipe-first, gesture-driven interaction model
-- Users land directly in the carousel — minimal navigation
+- Users land directly in the carousel — no landing page
+- Overlay controls that don't obstruct card content
 - Card flip for progressive disclosure
 - Playful, kid-friendly visual design (rounded, bright/soft palette, large targets)
