@@ -57,8 +57,23 @@ export default function Home() {
       >
         🐾 Animal Cards
       </Typography>
-      <Box sx={{ flex: 1, minHeight: 0 }}>
-        <Carousel animals={animals} loading={loading} />
+      <Box sx={{
+        flex: 1,
+        minHeight: 0,
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+      }}>
+        {/* Portrait aspect ratio wrapper — baseball card ~5:7 */}
+        <Box sx={{
+          width: '100%',
+          maxWidth: 420,
+          aspectRatio: '5 / 7',
+          maxHeight: '100%',
+        }}>
+          <Carousel animals={animals} loading={loading} />
+        </Box>
       </Box>
     </Box>
   );

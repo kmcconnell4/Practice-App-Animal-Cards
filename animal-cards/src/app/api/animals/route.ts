@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchWikipediaDescription, fetchWikimediaImage } from '@/lib/fetchWikipedia';
+import { fetchWikipediaData } from '@/lib/fetchWikipedia';
 import { normalizeAnimal } from '@/lib/normalizeAnimal';
 
 const ANIMAL_NAMES = [
-  'lion', 'elephant', 'giraffe', 'penguin', 'dolphin',
-  'cheetah', 'gorilla', 'polar bear', 'tiger', 'koala',
+  'lion', 'african bush elephant', 'giraffe', 'emperor penguin', 'bottlenose dolphin',
+  'cheetah', 'western gorilla', 'polar bear', 'tiger', 'koala',
   'zebra', 'hippopotamus', 'rhinoceros', 'chimpanzee', 'jaguar',
   'wolf', 'bear', 'fox', 'deer', 'rabbit',
   'eagle', 'owl', 'flamingo', 'parrot', 'toucan',
@@ -37,18 +37,39 @@ export async function GET(request: NextRequest) {
     }
 
     const ninjasData = await ninjasRes.json();
-    const raw = ninjasData[0];
-
-    if (!raw) {
+    if (!ninjasData.length) {
       return NextResponse.json({ error: 'Animal not found' }, { status: 404 });
     }
 
-    const [{ description, wikipediaUrl }, imageUrl] = await Promise.all([
-      fetchWikipediaDescription(name),
-      fetchWikimediaImage(name),
-    ]);
+    // Pick the best match from API Ninjas results: prefer an exact name match
+    // to the search term over subspecies / tangentially related results.
+    const normalizedName = name.toLowerCase();
+    const exactMatch = ninjasData.find((a: { name?: string }) => a.name?.toLowerCase() === normalizedName);
+    const raw = exactMatch ?? ninjasData[0];
 
-    const animal = normalizeAnimal(raw, description, imageUrl, wikipediaUrl);
+    // Step 1: Fetch Wikipedia + Wikidata — description, image, and canonical scientific name
+    const { description, wikipediaUrl, binomialName: wikidataBinomial, imageUrl } = await fetchWikipediaData(name);
+
+    // Step 2: Prefer a proper two-word binomial name. Wikidata sometimes returns only a genus
+    // (e.g. "Tursiops" for bottlenose dolphin, "Giraffa" for giraffe). In those cases,
+    // fall back to the API Ninjas taxonomy.scientific_name which is usually more specific.
+    type NinjasResult = { name?: string; taxonomy?: { scientific_name?: string } };
+    const isProperBinomial = (s: string) => s.includes(' ');
+    const rawSciName = (raw as NinjasResult).taxonomy?.scientific_name ?? '';
+    const fallbackRaw = !wikidataBinomial
+      ? (ninjasData as NinjasResult[]).find(
+          (a) => a.taxonomy?.scientific_name && a.name?.toLowerCase().includes(normalizedName)
+        ) ?? raw
+      : raw;
+    const binomialName =
+      (wikidataBinomial && isProperBinomial(wikidataBinomial))
+        ? wikidataBinomial
+        : (rawSciName && isProperBinomial(rawSciName))
+          ? rawSciName
+          : wikidataBinomial || rawSciName || '';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const animal = normalizeAnimal(fallbackRaw as any, description, imageUrl, wikipediaUrl, binomialName);
     return NextResponse.json({ animal });
   } catch (error) {
     console.error(`Error fetching animal "${name}":`, error);

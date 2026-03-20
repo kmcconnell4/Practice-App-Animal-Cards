@@ -25,7 +25,7 @@ export default function AnimalCard({ animal, onFlip }: AnimalCardProps) {
   };
 
   const handleFavorite = (e: React.MouseEvent) => {
-    e.stopPropagation(); // prevent card flip
+    e.stopPropagation();
     dispatch({ type: 'TOGGLE_FAVORITE', payload: animal.id });
   };
 
@@ -68,27 +68,27 @@ export default function AnimalCard({ animal, onFlip }: AnimalCardProps) {
           </Box>
           <Box sx={{ p: 2, bgcolor: 'background.paper', textAlign: 'center' }}>
             <Typography variant="h2" color="text.primary">{animal.name}</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Tap to learn more!</Typography>
+            {animal.binomialName ? (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontStyle: 'italic' }}>
+                {animal.binomialName}
+              </Typography>
+            ) : (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Tap to learn more!</Typography>
+            )}
           </Box>
         </Box>
 
-        {/* Heart button — inside flip container but outside overflow:hidden front face.
-            backfaceVisibility:hidden makes it disappear automatically when flipped.
-            Inset 20px from corner to clear the 16px border radius. */}
+        {/* Heart — inset 20px to clear rounded corners, hidden on back face */}
         <IconButton
           onClick={handleFavorite}
           aria-label={isFavorite ? `Remove ${animal.name} from favorites` : `Add ${animal.name} to favorites`}
           sx={{
-            position: 'absolute',
-            top: 20,
-            right: 20,
-            zIndex: 2,
+            position: 'absolute', top: 20, right: 20, zIndex: 2,
             backfaceVisibility: 'hidden',
             bgcolor: 'rgba(255,255,255,0.85)',
             backdropFilter: 'blur(4px)',
             '&:hover': { bgcolor: 'rgba(255,255,255,0.95)' },
-            minWidth: 48,
-            minHeight: 48,
+            minWidth: 48, minHeight: 48,
           }}
         >
           {isFavorite
@@ -125,3 +125,4 @@ export default function AnimalCard({ animal, onFlip }: AnimalCardProps) {
     </Box>
   );
 }
+

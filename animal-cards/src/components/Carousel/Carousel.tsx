@@ -48,11 +48,12 @@ export default function Carousel({ animals, loading }: CarouselProps) {
   }
 
   return (
-    <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 1, flexShrink: 0 }}>
         {state.currentIndex + 1} of {animals.length}
       </Typography>
-      <Box sx={{ flex: 1, minHeight: 0, overflow: 'visible' }}>
+      {/* Portrait card container — baseball card ratio ~5:7, max width 380px */}
+      <Box sx={{ width: '100%', maxWidth: 380, flex: 1, minHeight: 0, overflow: 'visible' }}>
         <Swiper
           modules={[Keyboard, A11y]}
           spaceBetween={16}
