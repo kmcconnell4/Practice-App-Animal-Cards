@@ -134,7 +134,7 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
             const theme = habitatTheme(animal.habitat);
             return (
               <Chip
-                label={`${theme.emoji} ${animal.habitat}`}
+                label={`${theme.emoji} ${animal.habitat.charAt(0).toUpperCase() + animal.habitat.slice(1)}`}
                 size="small"
                 sx={{
                   alignSelf: 'center',
@@ -147,7 +147,17 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
             );
           })()}
           <Typography variant="body1" color="text.primary">
-            {description.slice(0, 300)}{description.length > 300 ? '…' : ''}
+            {(() => {
+              const maxLen = 300;
+              if (description.length <= maxLen) return description;
+              const truncated = description.slice(0, maxLen);
+              const lastPeriod = truncated.lastIndexOf('.') + 1;
+              if (lastPeriod > 0) {
+                return truncated.slice(0, lastPeriod).trim();
+              } else {
+                return truncated.trim();
+              }
+            })()}
           </Typography>
           {funFacts.length > 0 && (
             <Box>
