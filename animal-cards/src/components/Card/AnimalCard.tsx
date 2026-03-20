@@ -157,7 +157,6 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
               ))}
             </Box>
           )}
-          <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mt: 'auto' }}>Tap to go back</Typography>
         </Box>
       </Box>
     </Box>
