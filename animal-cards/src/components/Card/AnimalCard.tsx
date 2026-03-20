@@ -8,6 +8,19 @@ import { Animal } from '@/types/animal';
 import { useAppContext } from '@/context/AppContext';
 import Image from 'next/image';
 
+function habitatTheme(habitat: string): { emoji: string; bg: string; color: string } {
+  const h = habitat.toLowerCase();
+  if (/ice|arctic|polar|snow|tundra/.test(h))     return { emoji: '❄️', bg: '#dff4ff', color: '#0369a1' };
+  if (/ocean|sea|marine|harbour|bay|coral/.test(h)) return { emoji: '🌊', bg: '#cffafe', color: '#0e7490' };
+  if (/rainforest|jungle|tropical forest/.test(h)) return { emoji: '🌿', bg: '#dcfce7', color: '#15803d' };
+  if (/forest|woodland|eucalyptus/.test(h))        return { emoji: '🌲', bg: '#d1fae5', color: '#065f46' };
+  if (/savannah|grassland|scrub|plains|open/.test(h)) return { emoji: '🌾', bg: '#fef9c3', color: '#a16207' };
+  if (/desert|arid|sand/.test(h))                  return { emoji: '🏜️', bg: '#fef3c7', color: '#b45309' };
+  if (/river|lake|wetland|flood|swamp/.test(h))    return { emoji: '💧', bg: '#e0f2fe', color: '#0369a1' };
+  if (/mountain|highland|cliff|rock/.test(h))      return { emoji: '⛰️', bg: '#f1f5f9', color: '#475569' };
+  return { emoji: '🌍', bg: '#f3e8ff', color: '#7e22ce' };
+}
+
 interface AnimalCardProps {
   animal: Animal;
   onFlip?: (flipped: boolean) => void;
@@ -105,9 +118,22 @@ export default function AnimalCard({ animal, onFlip }: AnimalCardProps) {
           display: 'flex', flexDirection: 'column', p: 3, gap: 2,
         }}>
           <Typography variant="h2" color="primary.main" textAlign="center">{animal.name}</Typography>
-          {animal.habitat && (
-            <Chip label={`🌍 ${animal.habitat}`} color="secondary" size="small" sx={{ alignSelf: 'center' }} />
-          )}
+          {animal.habitat && (() => {
+            const theme = habitatTheme(animal.habitat);
+            return (
+              <Chip
+                label={`${theme.emoji} ${animal.habitat}`}
+                size="small"
+                sx={{
+                  alignSelf: 'center',
+                  bgcolor: theme.bg,
+                  color: theme.color,
+                  fontWeight: 600,
+                  border: `1px solid ${theme.color}33`,
+                }}
+              />
+            );
+          })()}
           <Typography variant="body1" color="text.primary">
             {description.slice(0, 300)}{description.length > 300 ? '…' : ''}
           </Typography>
