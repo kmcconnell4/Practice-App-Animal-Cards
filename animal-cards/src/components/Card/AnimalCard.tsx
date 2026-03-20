@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, Chip, IconButton } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -24,14 +24,26 @@ function habitatTheme(habitat: string): { emoji: string; bg: string; color: stri
 interface AnimalCardProps {
   animal: Animal;
   onFlip?: (flipped: boolean) => void;
+  onFocus?: () => void;
+  isFocused?: boolean;
 }
 
-export default function AnimalCard({ animal, onFlip }: AnimalCardProps) {
+export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }: AnimalCardProps) {
   const [flipped, setFlipped] = useState(false);
   const { state, dispatch } = useAppContext();
   const isFavorite = state.favorites.includes(animal.id);
 
+  // Reset flip when this card loses focus
+  useEffect(() => {
+    if (!isFocused && flipped) {
+      setFlipped(false);
+      onFlip?.(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused]);
+
   const handleFlip = () => {
+    onFocus?.();          // bring this card to center first
     const next = !flipped;
     setFlipped(next);
     onFlip?.(next);
