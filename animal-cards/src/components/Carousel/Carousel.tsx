@@ -48,29 +48,31 @@ export default function Carousel({ animals, loading }: CarouselProps) {
   }
 
   return (
-    <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>
-      <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 1 }}>
+    <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 1, flexShrink: 0 }}>
         {state.currentIndex + 1} of {animals.length}
       </Typography>
-      <Swiper
-        modules={[Keyboard, A11y]}
-        spaceBetween={24}
-        slidesPerView={1.08}
-        centeredSlides
-        keyboard={{ enabled: true }}
-        a11y={{ enabled: true }}
-        onSwiper={(swiper) => { swiperRef.current = swiper; }}
-        onSlideChange={handleSlideChange}
-        style={{ width: '100%', height: 'calc(100% - 32px)' }}
-      >
-        {animals.map((animal) => (
-          <SwiperSlide key={animal.id}>
-            <Box sx={{ width: '100%', height: '100%', p: 1 }}>
-              <AnimalCard animal={animal} />
-            </Box>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      <Box sx={{ flex: 1, minHeight: 0, overflow: 'visible' }}>
+        <Swiper
+          modules={[Keyboard, A11y]}
+          spaceBetween={16}
+          slidesPerView={1.08}
+          centeredSlides
+          keyboard={{ enabled: true }}
+          a11y={{ enabled: true }}
+          onSwiper={(swiper) => { swiperRef.current = swiper; }}
+          onSlideChange={handleSlideChange}
+          style={{ width: '100%', height: '100%', overflow: 'visible' }}
+        >
+          {animals.map((animal) => (
+            <SwiperSlide key={animal.id} style={{ overflow: 'visible' }}>
+              <Box sx={{ width: '100%', height: '100%', px: 1, pt: 1, pb: 2 }}>
+                <AnimalCard animal={animal} />
+              </Box>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </Box>
     </Box>
   );
 }
