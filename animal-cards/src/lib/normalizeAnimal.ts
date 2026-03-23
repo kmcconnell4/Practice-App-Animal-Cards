@@ -31,20 +31,37 @@ export function normalizeAnimal(
   description: string,
   imageUrl: string,
   wikipediaUrl: string,
-  binomialName?: string
+  binomialName?: string,
+  conservationStatusFromWiki?: string
 ): Animal {
   const key = raw.name?.toLowerCase() ?? '';
-  const override = overrides[key] ?? {};
+  const characteristics = raw.characteristics ?? {};
+  // Use Wikidata first, then API Ninjas, then override as last fallback
+  let conservationStatus = '';
+  if (conservationStatusFromWiki && conservationStatusFromWiki !== '') {
+    conservationStatus = conservationStatusFromWiki;
+  } else if (characteristics.conservation_status) {
+    conservationStatus = characteristics.conservation_status;
+  } else if (overrides[key]?.conservationStatus) {
+    conservationStatus = overrides[key].conservationStatus;
+  } else {
+    conservationStatus = 'Unknown';
+  }
   return {
     id: key.replace(/\s+/g, '-'),
     name: raw.name ?? 'Unknown',
     binomialName: binomialName || raw.taxonomy?.scientific_name || '',
-    habitat: raw.characteristics?.habitat ?? '',
+    habitat: characteristics.habitat ?? '',
     range: Array.isArray(raw.locations) ? raw.locations.join(', ') : '',
     description: description || 'No description available.',
     imageUrl: imageUrl || '',
-    funFacts: override.funFacts ?? [],
-    conservationStatus: override.conservationStatus ?? 'Unknown',
+    conservationStatus,
     wikipediaUrl,
+    diet: characteristics.diet ?? undefined,
+    prey: characteristics.prey ?? undefined,
+    youngName: characteristics.baby ?? undefined,
+    topSpeed: characteristics.top_speed ?? undefined,
+    height: characteristics.height ?? undefined,
+    weight: characteristics.weight ?? undefined,
   };
 }

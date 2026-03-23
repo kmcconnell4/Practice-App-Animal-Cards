@@ -221,14 +221,27 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
               }
             })()}
           </Typography>
-          {funFacts.length > 0 && (
-            <Box>
-              <Typography variant="h3" color="text.primary" sx={{ mb: 1 }}>Fun Facts 🌟</Typography>
-              {funFacts.map((fact, i) => (
-                <Typography key={i} variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>• {fact}</Typography>
-              ))}
-            </Box>
-          )}
+          {/* Animal details from API Ninjas */}
+          <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+            {animal.diet && (
+              <Typography variant="body2" color="text.secondary">🍽️ <b>Diet:</b> {animal.diet}</Typography>
+            )}
+            {animal.prey && (
+              <Typography variant="body2" color="text.secondary">🦴 <b>Prey:</b> {animal.prey}</Typography>
+            )}
+            {animal.youngName && (
+              <Typography variant="body2" color="text.secondary">🐣 <b>Young called:</b> {animal.youngName}</Typography>
+            )}
+            {animal.topSpeed && (
+              <Typography variant="body2" color="text.secondary">🏃 <b>Top speed:</b> {animal.topSpeed}</Typography>
+            )}
+            {animal.height && (
+              <Typography variant="body2" color="text.secondary">📏 <b>Height:</b> {animal.height}</Typography>
+            )}
+            {animal.weight && (
+              <Typography variant="body2" color="text.secondary">⚖️ <b>Weight:</b> {animal.weight}</Typography>
+            )}
+          </Box>
         </Box>
       </Box>
     </Box>

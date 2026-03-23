@@ -47,8 +47,8 @@ export async function GET(request: NextRequest) {
     const exactMatch = ninjasData.find((a: { name?: string }) => a.name?.toLowerCase() === normalizedName);
     const raw = exactMatch ?? ninjasData[0];
 
-    // Step 1: Fetch Wikipedia + Wikidata — description, image, and canonical scientific name
-    const { description, wikipediaUrl, binomialName: wikidataBinomial, imageUrl } = await fetchWikipediaData(name);
+    // Step 1: Fetch Wikipedia + Wikidata — description, image, canonical scientific name, and conservation status
+    const { description, wikipediaUrl, binomialName: wikidataBinomial, imageUrl, conservationStatus } = await fetchWikipediaData(name);
 
     // Step 2: Prefer a proper two-word binomial name. Wikidata sometimes returns only a genus
     // (e.g. "Tursiops" for bottlenose dolphin, "Giraffa" for giraffe). In those cases,
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
           : wikidataBinomial || rawSciName || '';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const animal = normalizeAnimal(fallbackRaw as any, description, imageUrl, wikipediaUrl, binomialName);
+    const animal = normalizeAnimal(fallbackRaw as any, description, imageUrl, wikipediaUrl, binomialName, conservationStatus);
     return NextResponse.json({ animal });
   } catch (error) {
     console.error(`Error fetching animal "${name}":`, error);

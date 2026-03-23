@@ -6,9 +6,14 @@ export interface Animal {
   range: string;
   description: string;
   imageUrl: string;
-  funFacts: string[];
   conservationStatus: string;
   wikipediaUrl: string;
+  diet?: string;
+  prey?: string;
+  youngName?: string;
+  topSpeed?: string;
+  height?: string;
+  weight?: string;
 }
 
 export interface Deck {
