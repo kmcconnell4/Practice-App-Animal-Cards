@@ -22,11 +22,15 @@ import Image from 'next/image';
 
 function habitatTheme(habitat: string): { emoji: string; bg: string; color: string } {
   const h = habitat.toLowerCase();
+  // Grassland/savannah matching (expanded)
+  if (/savannah|savanna|grassland|grasslands|open grassland|open grasslands/.test(h)) {
+    return { emoji: '🌾', bg: '#fef9c3', color: '#a16207' };
+  }
   if (/ice|arctic|polar|snow|tundra/.test(h))     return { emoji: '❄️', bg: '#dff4ff', color: '#0369a1' };
   if (/ocean|sea|marine|harbour|bay|coral/.test(h)) return { emoji: '🌊', bg: '#cffafe', color: '#0e7490' };
   if (/rainforest|jungle|tropical forest/.test(h)) return { emoji: '🌿', bg: '#dcfce7', color: '#15803d' };
   if (/forest|woodland|eucalyptus/.test(h))        return { emoji: '🌲', bg: '#d1fae5', color: '#065f46' };
-  if (/savannah|grassland|scrub|plains|open/.test(h)) return { emoji: '🌾', bg: '#fef9c3', color: '#a16207' };
+  if (/scrub|plains|open/.test(h))                 return { emoji: '🌾', bg: '#fef9c3', color: '#a16207' };
   if (/desert|arid|sand/.test(h))                  return { emoji: '🏜️', bg: '#fef3c7', color: '#b45309' };
   if (/river|lake|wetland|flood|swamp/.test(h))    return { emoji: '💧', bg: '#e0f2fe', color: '#0369a1' };
   if (/mountain|highland|cliff|rock/.test(h))      return { emoji: '⛰️', bg: '#f1f5f9', color: '#475569' };
