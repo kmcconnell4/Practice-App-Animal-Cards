@@ -88,7 +88,6 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
     dispatch({ type: 'TOGGLE_FAVORITE', payload: animal.id });
   };
 
-  const funFacts = animal.funFacts ?? [];
   const description = animal.description ?? '';
 
   // Conservation status mapping
@@ -154,9 +153,20 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
                 <Typography sx={{ fontSize: '2rem', lineHeight: 1 }}>{theme.emoji}</Typography>
               </Box>
             </Tooltip>
-            {/* Name and binomial center, with Listen button below */}
-            <Box sx={{ flex: 1, textAlign: 'center', px: 1 }}>
-              <Typography variant="h2" color="text.primary" sx={{ fontSize: '1.25rem', fontWeight: 700 }}>{animal.name}</Typography>
+            {/* Name and binomial center, with Listen emoji button */}
+            <Box sx={{ flex: 1, textAlign: 'center', px: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                <Typography variant="h2" color="text.primary" sx={{ fontSize: '1.25rem', fontWeight: 700, mb: 0 }}>{animal.name}</Typography>
+                <IconButton
+                  onClick={handleListen}
+                  aria-label={`Listen to information about ${animal.name}`}
+                  size="small"
+                  sx={{ p: 0.5, ml: 0.5 }}
+                  disabled={speaking}
+                >
+                  <span role="img" aria-label="Listen" style={{ fontSize: '1.25rem', opacity: speaking ? 0.5 : 1 }}>🔊</span>
+                </IconButton>
+              </Box>
               {animal.binomialName ? (
                 <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '1rem' }}>
                   {animal.binomialName}
@@ -164,17 +174,6 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
               ) : (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Tap to learn more!</Typography>
               )}
-              <Button
-                onClick={handleListen}
-                aria-label={`Listen to information about ${animal.name}`}
-                size="small"
-                variant={speaking ? 'contained' : 'outlined'}
-                color={speaking ? 'primary' : 'inherit'}
-                sx={{ mt: 1, fontWeight: 600, minWidth: 90 }}
-                disabled={speaking}
-              >
-                {speaking ? 'Playing...' : 'Listen'}
-              </Button>
             </Box>
             {/* Conservation status right with tooltip */}
             <Tooltip title={status.text} placement="top" arrow>
