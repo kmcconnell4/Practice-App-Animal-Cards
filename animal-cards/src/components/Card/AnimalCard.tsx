@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Typography, Chip, IconButton, Tooltip } from '@mui/material';
+import { Box, Typography, Chip, IconButton, Tooltip, Button } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Animal } from '@/types/animal';
@@ -21,17 +21,41 @@ function habitatTheme(habitat: string): { emoji: string; bg: string; color: stri
   return { emoji: '🌍', bg: '#f3e8ff', color: '#7e22ce' };
 }
 
-interface AnimalCardProps {
-  animal: Animal;
-  onFlip?: (flipped: boolean) => void;
-  onFocus?: () => void;
-  isFocused?: boolean;
-}
 
 export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }: AnimalCardProps) {
   const [flipped, setFlipped] = useState(false);
   const { state, dispatch } = useAppContext();
   const isFavorite = state.favorites.includes(animal.id);
+  const [speaking, setSpeaking] = useState(false);
+
+  // Text-to-Speech handler
+  const handleListen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+    const utter = new window.SpeechSynthesisUtterance(
+      [
+        animal.name,
+        animal.binomialName ? `(${animal.binomialName})` : '',
+        animal.description ?? ''
+      ].filter(Boolean).join('. ')
+    );
+    utter.onstart = () => setSpeaking(true);
+    utter.onend = () => setSpeaking(false);
+    utter.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(utter);
+  };
+
+  // Stop speech if card loses focus or is flipped
+  useEffect(() => {
+    if (!isFocused || !flipped) {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      setSpeaking(false);
+    }
+  }, [isFocused, flipped]);
 
   // Reset flip when this card loses focus
   useEffect(() => {
@@ -39,7 +63,7 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
       setFlipped(false);
       onFlip?.(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
   const handleFlip = () => {
@@ -109,7 +133,7 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
               </Box>
             )}
           </Box>
-          {/* Lower half: emoji left, name center, status right */}
+          {/* Lower half: emoji left, name center, status right, listen button */}
           <Box sx={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             p: 2, bgcolor: theme.bg, minHeight: 72,
@@ -120,7 +144,7 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
                 <Typography sx={{ fontSize: '2rem', lineHeight: 1 }}>{theme.emoji}</Typography>
               </Box>
             </Tooltip>
-            {/* Name and binomial center */}
+            {/* Name and binomial center, with Listen button below */}
             <Box sx={{ flex: 1, textAlign: 'center', px: 1 }}>
               <Typography variant="h2" color="text.primary" sx={{ fontSize: '1.25rem', fontWeight: 700 }}>{animal.name}</Typography>
               {animal.binomialName ? (
@@ -130,6 +154,17 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
               ) : (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Tap to learn more!</Typography>
               )}
+              <Button
+                onClick={handleListen}
+                aria-label={`Listen to information about ${animal.name}`}
+                size="small"
+                variant={speaking ? 'contained' : 'outlined'}
+                color={speaking ? 'primary' : 'inherit'}
+                sx={{ mt: 1, fontWeight: 600, minWidth: 90 }}
+                disabled={speaking}
+              >
+                {speaking ? 'Playing...' : 'Listen'}
+              </Button>
             </Box>
             {/* Conservation status right with tooltip */}
             <Tooltip title={status.text} placement="top" arrow>
