@@ -11,7 +11,9 @@ interface AnimalCardProps {
 }
 
 import { useState, useEffect } from 'react';
-import { Box, Typography, Chip, IconButton, Tooltip, Button } from '@mui/material';
+import { Box, Typography, Chip, IconButton, Tooltip } from '@mui/material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Animal } from '@/types/animal';
@@ -153,20 +155,9 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
                 <Typography sx={{ fontSize: '2rem', lineHeight: 1 }}>{theme.emoji}</Typography>
               </Box>
             </Tooltip>
-            {/* Name and binomial center, with Listen emoji button */}
+            {/* Name and binomial center */}
             <Box sx={{ flex: 1, textAlign: 'center', px: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                <Typography variant="h2" color="text.primary" sx={{ fontSize: '1.25rem', fontWeight: 700, mb: 0 }}>{animal.name}</Typography>
-                <IconButton
-                  onClick={handleListen}
-                  aria-label={`Listen to information about ${animal.name}`}
-                  size="small"
-                  sx={{ p: 0.5, ml: 0.5 }}
-                  disabled={speaking}
-                >
-                  <span role="img" aria-label="Listen" style={{ fontSize: '1.25rem', opacity: speaking ? 0.5 : 1 }}>🔊</span>
-                </IconButton>
-              </Box>
+              <Typography variant="h2" color="text.primary" sx={{ fontSize: '1.25rem', fontWeight: 700, mb: 0 }}>{animal.name}</Typography>
               {animal.binomialName ? (
                 <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '1rem' }}>
                   {animal.binomialName}
@@ -189,7 +180,28 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
           </Box>
         </Box>
 
-        {/* Heart — inset 20px to clear rounded corners, hidden on back face */}
+        {/* Play (TTS) button — top left, and Heart — top right, both inset 20px */}
+        <IconButton
+          onClick={speaking
+            ? (e) => {
+                e.stopPropagation();
+                window.speechSynthesis.cancel();
+              }
+            : handleListen}
+          aria-label={speaking ? `Stop reading information about ${animal.name}` : `Play information about ${animal.name}`}
+          sx={{
+            position: 'absolute', top: 20, left: 20, zIndex: 2,
+            backfaceVisibility: 'hidden',
+            bgcolor: 'rgba(255,255,255,0.85)',
+            backdropFilter: 'blur(4px)',
+            '&:hover': { bgcolor: 'rgba(255,255,255,0.95)' },
+            minWidth: 48, minHeight: 48,
+          }}
+        >
+          {speaking
+            ? <StopIcon sx={{ color: 'primary.main', fontSize: 28 }} />
+            : <PlayArrowIcon sx={{ color: 'primary.main', fontSize: 28 }} />}
+        </IconButton>
         <IconButton
           onClick={handleFavorite}
           aria-label={isFavorite ? `Remove ${animal.name} from favorites` : `Add ${animal.name} to favorites`}
