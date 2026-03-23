@@ -1,13 +1,64 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button, ButtonGroup } from '@mui/material';
 import Carousel from '@/components/Carousel/Carousel';
 import { Animal } from '@/types/animal';
 
 export default function Home() {
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [loading, setLoading] = useState(true);
+  // Placeholder handlers for sort/shuffle actions
+  const handleSortHabitat = () => {
+    setAnimals((prev) => {
+      // Group animals by habitat (alphabetically, unknowns last)
+      return [...prev].sort((a, b) => {
+        const ha = a.habitat?.toLowerCase() || 'zzz';
+        const hb = b.habitat?.toLowerCase() || 'zzz';
+        if (ha < hb) return -1;
+        if (ha > hb) return 1;
+        return a.name.localeCompare(b.name);
+      });
+    });
+  };
+  const handleSortConservation = () => {
+    // Define a custom order for conservation statuses
+    const statusOrder = [
+      'Least Concern',
+      'Near Threatened',
+      'Vulnerable',
+      'Endangered',
+      'Critically Endangered',
+      'Extinct in the Wild',
+      'Extinct',
+      'Unknown',
+    ];
+    const getStatusRank = (status: string) => {
+      const idx = statusOrder.findIndex(
+        (s) => s.toLowerCase() === (status?.toLowerCase() || '')
+      );
+      return idx === -1 ? statusOrder.length : idx;
+    };
+    setAnimals((prev) => {
+      return [...prev].sort((a, b) => {
+        const ra = getStatusRank(a.conservationStatus);
+        const rb = getStatusRank(b.conservationStatus);
+        if (ra !== rb) return ra - rb;
+        return a.name.localeCompare(b.name);
+      });
+    });
+  };
+  const handleShuffle = () => {
+    // Fisher-Yates shuffle
+    setAnimals((prev) => {
+      const arr = [...prev];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    });
+  };
 
   useEffect(() => {
     async function loadAnimals() {
@@ -57,6 +108,14 @@ export default function Home() {
       >
         🐾 Animal Cards
       </Typography>
+      {/* Sort/Shuffle Controls */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+        <ButtonGroup variant="outlined" aria-label="Sort and shuffle controls">
+          <Button onClick={handleSortHabitat} aria-label="Sort by habitat">Sort by Habitat</Button>
+          <Button onClick={handleSortConservation} aria-label="Sort by conservation status">Sort by Conservation</Button>
+          <Button onClick={handleShuffle} aria-label="Shuffle cards">Shuffle</Button>
+        </ButtonGroup>
+      </Box>
       <Box sx={{
         flex: 1,
         minHeight: 0,

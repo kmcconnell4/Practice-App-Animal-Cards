@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Typography, Chip, IconButton } from '@mui/material';
+import { Box, Typography, Chip, IconButton, Tooltip } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Animal } from '@/types/animal';
@@ -57,6 +57,24 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
   const funFacts = animal.funFacts ?? [];
   const description = animal.description ?? '';
 
+  // Conservation status mapping
+  const statusMap: Record<string, { code: string; color: string; text: string }> = {
+    'extinct': { code: 'EX', color: '#222', text: 'Extinct' },
+    'extinct in the wild': { code: 'EW', color: '#222', text: 'Extinct in Wild' },
+    'critically endangered': { code: 'CR', color: '#d32f2f', text: 'Critically Endangered' },
+    'endangered': { code: 'EN', color: '#f57c00', text: 'Endangered' },
+    'vulnerable': { code: 'VU', color: '#fbc02d', text: 'Vulnerable' },
+    'near threatened': { code: 'NT', color: '#00897b', text: 'Near Threatened' },
+    'conservation dependent': { code: 'CD', color: '#1976d2', text: 'Conservation Dep.' },
+    'least concern': { code: 'LC', color: '#00796b', text: 'Least Concern' },
+    'data deficient': { code: 'DD', color: '#757575', text: 'Data Deficient' },
+    'not evaluated': { code: 'NE', color: '#bdbdbd', text: 'Not Evaluated' },
+    'unknown': { code: '?', color: '#e0e0e0', text: 'Unknown' },
+  };
+  const statusKey = (animal.conservationStatus || '').toLowerCase().replace(/_/g, ' ');
+  const status = statusMap[statusKey] || statusMap['unknown'];
+  const theme = habitatTheme(animal.habitat);
+
   return (
     <Box
       onClick={handleFlip}
@@ -91,15 +109,39 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
               </Box>
             )}
           </Box>
-          <Box sx={{ p: 2, bgcolor: 'background.paper', textAlign: 'center' }}>
-            <Typography variant="h2" color="text.primary">{animal.name}</Typography>
-            {animal.binomialName ? (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontStyle: 'italic' }}>
-                {animal.binomialName}
-              </Typography>
-            ) : (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Tap to learn more!</Typography>
-            )}
+          {/* Lower half: emoji left, name center, status right */}
+          <Box sx={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            p: 2, bgcolor: theme.bg, minHeight: 72,
+          }}>
+            {/* Emoji left with tooltip */}
+            <Tooltip title={animal.habitat ? `${theme.emoji} ${animal.habitat}` : 'Unknown habitat'} placement="top" arrow>
+              <Box sx={{ flex: '0 0 48px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 48 }}>
+                <Typography sx={{ fontSize: '2rem', lineHeight: 1 }}>{theme.emoji}</Typography>
+              </Box>
+            </Tooltip>
+            {/* Name and binomial center */}
+            <Box sx={{ flex: 1, textAlign: 'center', px: 1 }}>
+              <Typography variant="h2" color="text.primary" sx={{ fontSize: '1.25rem', fontWeight: 700 }}>{animal.name}</Typography>
+              {animal.binomialName ? (
+                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '1rem' }}>
+                  {animal.binomialName}
+                </Typography>
+              ) : (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Tap to learn more!</Typography>
+              )}
+            </Box>
+            {/* Conservation status right with tooltip */}
+            <Tooltip title={status.text} placement="top" arrow>
+              <Box sx={{ flex: '0 0 48px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 48 }}>
+                <Box sx={{
+                  width: 40, height: 40, borderRadius: '50%',
+                  bgcolor: status.color, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.1rem', textShadow: '0 1px 2px #0002' }}>{status.code}</Typography>
+                </Box>
+              </Box>
+            </Tooltip>
           </Box>
         </Box>
 
@@ -130,22 +172,42 @@ export default function AnimalCard({ animal, onFlip, onFocus, isFocused = true }
           display: 'flex', flexDirection: 'column', p: 3, gap: 2,
         }}>
           <Typography variant="h2" color="primary.main" textAlign="center">{animal.name}</Typography>
-          {animal.habitat && (() => {
-            const theme = habitatTheme(animal.habitat);
-            return (
-              <Chip
-                label={`${theme.emoji} ${animal.habitat.charAt(0).toUpperCase() + animal.habitat.slice(1)}`}
-                size="small"
-                sx={{
-                  alignSelf: 'center',
-                  bgcolor: theme.bg,
-                  color: theme.color,
-                  fontWeight: 600,
-                  border: `1px solid ${theme.color}33`,
-                }}
-              />
-            );
-          })()}
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 1 }}>
+            {/* Habitat badge */}
+            {animal.habitat && (() => {
+              const theme = habitatTheme(animal.habitat);
+              return (
+                <Chip
+                  label={`${theme.emoji} ${animal.habitat.charAt(0).toUpperCase() + animal.habitat.slice(1)}`}
+                  size="small"
+                  sx={{
+                    alignSelf: 'center',
+                    bgcolor: theme.bg,
+                    color: theme.color,
+                    fontWeight: 600,
+                    border: `1px solid ${theme.color}33`,
+                  }}
+                />
+              );
+            })()}
+            {/* Conservation status badge */}
+              {status && (
+                <Chip
+                  label={status.text}
+                  size="small"
+                  sx={{
+                    alignSelf: 'center',
+                    bgcolor: status.color,
+                    color: '#fff',
+                    fontWeight: 600,
+                    border: `1px solid #0001`,
+                    textTransform: 'capitalize',
+                    fontSize: '0.8125rem', // match MUI Chip default for small
+                    letterSpacing: 0.1,
+                  }}
+                />
+            )}
+          </Box>
           <Typography variant="body1" color="text.primary">
             {(() => {
               const maxLen = 300;
