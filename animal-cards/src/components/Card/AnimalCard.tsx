@@ -1,11 +1,14 @@
 
+"use client";
+
+
+
 interface AnimalCardProps {
   animal: Animal;
   onFlip?: (flipped: boolean) => void;
   onFocus?: () => void;
   isFocused?: boolean;
 }
-'use client';
 
 import { useState, useEffect } from 'react';
 import { Box, Typography, Chip, IconButton, Tooltip, Button } from '@mui/material';
