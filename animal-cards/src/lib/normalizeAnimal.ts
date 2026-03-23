@@ -57,11 +57,11 @@ export function normalizeAnimal(
     imageUrl: imageUrl || '',
     conservationStatus,
     wikipediaUrl,
-    diet: characteristics.diet ?? undefined,
-    prey: characteristics.prey ?? undefined,
-    youngName: characteristics.baby ?? undefined,
-    topSpeed: characteristics.top_speed ?? undefined,
-    height: characteristics.height ?? undefined,
-    weight: characteristics.weight ?? undefined,
+    diet: typeof characteristics.diet === 'string' ? characteristics.diet : undefined,
+    prey: typeof characteristics.prey === 'string' ? characteristics.prey : undefined,
+    youngName: typeof characteristics.baby === 'string' ? characteristics.baby : undefined,
+    topSpeed: typeof characteristics.top_speed === 'string' ? characteristics.top_speed : undefined,
+    height: typeof characteristics.height === 'string' ? characteristics.height : undefined,
+    weight: typeof characteristics.weight === 'string' ? characteristics.weight : undefined,
   };
 }
