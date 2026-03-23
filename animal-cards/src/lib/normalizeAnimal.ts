@@ -40,7 +40,7 @@ export function normalizeAnimal(
   let conservationStatus = '';
   if (conservationStatusFromWiki && conservationStatusFromWiki !== '') {
     conservationStatus = conservationStatusFromWiki;
-  } else if (characteristics.conservation_status) {
+  } else if (typeof characteristics.conservation_status === 'string') {
     conservationStatus = characteristics.conservation_status;
   } else if (overrides[key]?.conservationStatus) {
     conservationStatus = overrides[key].conservationStatus;
