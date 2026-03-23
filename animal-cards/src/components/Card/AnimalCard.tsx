@@ -1,3 +1,10 @@
+
+interface AnimalCardProps {
+  animal: Animal;
+  onFlip?: (flipped: boolean) => void;
+  onFocus?: () => void;
+  isFocused?: boolean;
+}
 'use client';
 
 import { useState, useEffect } from 'react';
